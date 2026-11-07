@@ -26,7 +26,8 @@ boardForm(form, {
     const member = new URL(`/b/${result.id}`, location.origin).href;
     memberLink.value = member;
     adminLink.value = `${member}#admin=${result.token}`;
-    document.querySelector<HTMLAnchorElement>("#open-board")!.href = adminLink.value;
+    document.querySelector<HTMLAnchorElement>("#open-member")!.href = memberLink.value;
+    for (const open of ["#open-admin", "#open-board"]) document.querySelector<HTMLAnchorElement>(open)!.href = adminLink.value;
     try {
       localStorage.setItem(`pys-admin-${result.id}`, result.token);
       rememberBoard(localStorage, result.id, board.title);
@@ -56,6 +57,12 @@ for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-scroll]")
     const target = document.getElementById(link.dataset.scroll!);
     if (!target) return;
     event.preventDefault();
+    // the form holds the last board's names and settings, so a new board starts from a fresh page
+    if (link.dataset.scroll === "new" && !created.hidden) {
+      location.replace(`${location.pathname}#new`);
+      location.reload();
+      return;
+    }
     target.scrollIntoView({ block: "start" });
     history.replaceState(null, "", `#${link.dataset.scroll}`);
     if (link.dataset.scroll === "new" && !form.hidden) form.querySelector<HTMLInputElement>("#f-title")?.focus({ preventScroll: true });

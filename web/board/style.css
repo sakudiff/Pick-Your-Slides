@@ -50,6 +50,7 @@
 .empty-state { margin: 14vh auto 0; max-width: 360px; padding: 28px 20px; border: var(--border) solid var(--ink); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-hard); text-align: center; }
 .empty-state h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 6px; }
 .empty-state p { color: var(--secondary); margin: 0 0 20px; }
+#slides > .primary { display: block; margin: -8px auto 0; }
 .empty-state .primary { display: inline-block; }
 
 @media (prefers-reduced-motion: reduce) {

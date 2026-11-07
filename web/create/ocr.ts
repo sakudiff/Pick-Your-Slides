@@ -1,5 +1,6 @@
 // Screenshots are read here in the browser, so pictures of people's names never leave the device.
 import type { Worker } from "tesseract.js";
+import { loadChunk } from "../shared/api.ts";
 
 declare const __TESSERACT__: string;
 const VENDOR = typeof __TESSERACT__ === "string" ? __TESSERACT__ : "/vendor/tesseract";
@@ -13,7 +14,7 @@ let worker: Promise<Worker> | null = null;
 export function warmReader(): Promise<Worker> {
   worker ??= (async () => {
     // the prebuilt ESM build, because bundling the CommonJS source loses its named exports
-    const { default: { createWorker } } = await import("tesseract.js/dist/tesseract.esm.min.js");
+    const { default: { createWorker } } = await loadChunk(() => import("tesseract.js/dist/tesseract.esm.min.js"));
     return createWorker("eng", 1, {
       workerPath: `${VENDOR}/worker.min.js`,
       corePath: `${VENDOR}/core`,

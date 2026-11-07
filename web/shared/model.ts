@@ -94,8 +94,9 @@ export function boardError(value: unknown): string | null {
   if (!isRecord(value)) return "Send a board.";
   if (!isText(value.title, LIMITS.title)) return `Give the board a title of up to ${LIMITS.title} characters.`;
   const { slides, sections, roster, settings } = value;
-  if (!Array.isArray(slides) || slides.length === 0 || slides.length > LIMITS.slides) {
-    return `A board needs between 1 and ${LIMITS.slides} slides.`;
+  // a board with no slides yet holds only polls until the deck is added
+  if (!Array.isArray(slides) || slides.length > LIMITS.slides) {
+    return `A board holds up to ${LIMITS.slides} slides.`;
   }
   if (!slides.every(slide => isRecord(slide) && isText(slide.title, LIMITS.title, true))) {
     return `Slide titles must be up to ${LIMITS.title} characters.`;

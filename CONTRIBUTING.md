@@ -7,7 +7,7 @@ Thanks for helping. Bug reports, small fixes and ideas are all welcome. Open an 
 This repository is a public copy of a private one that deploys the live site. Releases are pushed here automatically, so nothing is merged here directly.
 
 1. Open an issue or a pull request here, as usual.
-2. Once a pull request is accepted, the change is applied to the private repository, credited to you, and the pull request is closed with a link to the release it ships in.
+2. Once a pull request is accepted, the change is applied to the private repository, and the pull request is closed with a link to the release it ships in. The release notes credit you by your GitHub name.
 3. The next release publishes it here.
 
 ## Setup

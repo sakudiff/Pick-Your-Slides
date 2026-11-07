@@ -10,6 +10,18 @@ export class ApiError extends Error {
   }
 }
 
+// A deploy replaces the previous build's chunks, so a page opened before it can no longer load code it imports later.
+export class StaleBuild extends Error {}
+
+export async function loadChunk<T>(load: () => Promise<T>): Promise<T> {
+  try {
+    return await load();
+  } catch (failure) {
+    if (!(failure instanceof TypeError)) throw failure;
+    throw new StaleBuild("Pick your slides was updated while this page was open. Reload the page, then try again.");
+  }
+}
+
 export function parseSnapshot(value: unknown): Snapshot | null {
   return asSnapshot(value);
 }

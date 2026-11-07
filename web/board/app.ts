@@ -157,7 +157,7 @@ function renderToolbar(snapshot: Snapshot): void {
   document.title = `${snapshot.meta.title} · Pick your slides`;
   $("#title").textContent = snapshot.meta.title;
   const claimed = Object.keys(snapshot.claims).length;
-  $("#summary").textContent = `${claimed} of ${snapshot.meta.slides.length} claimed · ${snapshot.meta.roster.length} people`;
+  $("#summary").textContent = `${snapshot.meta.slides.length ? `${claimed} of ${snapshot.meta.slides.length} claimed` : "No slides yet"} · ${snapshot.meta.roster.length} people`;
   $<HTMLButtonElement>("#share").disabled = false;
   const identity = $<HTMLButtonElement>("#me");
   identity.replaceChildren(me ? pill(me, true) : document.createTextNode("Who are you?"));
@@ -203,7 +203,11 @@ function renderSlides(snapshot: Snapshot): void {
   });
   const container = $("#slides");
   container.replaceChildren();
-  if (numbers.length === 0) {
+  $("#view-slides .view-tools").hidden = snapshot.meta.slides.length === 0;
+  if (snapshot.meta.slides.length === 0) {
+    container.append(emptyState(token ? "No slides yet. Add the deck when it's ready, and everyone can claim theirs." : "No slides yet. The organizer adds the deck later. Polls are open now."));
+    if (token) container.append(button("Add Your Deck", "primary", openSettings));
+  } else if (numbers.length === 0) {
     container.append(emptyState(filter === "mine" ? (me ? "You have no slides yet." : "Choose who you are to see your slides.") : "Every slide is taken."));
   } else {
     container.append(grouped(bySection(snapshot, numbers, number => number, number => slideRow(snapshot, number))));
@@ -417,6 +421,10 @@ function resetPollForm(): void {
 function renderOrder(snapshot: Snapshot): void {
   const numbers = snapshot.meta.slides.map((_, index) => index + 1);
   const container = $("#order");
+  if (numbers.length === 0) {
+    container.replaceChildren(emptyState("The presenting order shows once the deck is added."));
+    return;
+  }
   container.replaceChildren(grouped(bySection(snapshot, numbers, number => number, number => {
     const owner = snapshot.claims[number];
     const row = el("div", "row");
@@ -509,7 +517,7 @@ function updateHelp(): void {
 async function coach(kind: "board" | "polls", replay = false): Promise<void> {
   if (!board || coachRunning() || document.hidden || document.querySelector("dialog[open]")) return;
   if (!replay && stored(SEEN[kind])) return;
-  if (kind === "board" && currentView !== "slides") showView("slides");
+  if (kind === "board" && currentView !== "slides" && board.meta.slides.length) showView("slides");
   await runCoach(kind === "board" ? boardSteps() : pollSteps());
   // finished or skipped, it does not start on its own again
   store(SEEN[kind], "1");
@@ -617,7 +625,7 @@ function start(): void {
       { label: "About", action: () => { location.href = "/about/"; } },
     ];
     if (token) {
-      items.push("separator", { label: "Split Evenly…", action: openSplit }, { label: "Board Settings…", action: openSettings });
+      items.push("separator", ...(board?.meta.slides.length ? [{ label: "Split Evenly…", action: openSplit }] : []), { label: "Board Settings…", action: openSettings });
       items.push({ label: "Delete Board…", destructive: true, action: () => { void deleteBoard(); } });
     }
     return items;
@@ -712,6 +720,8 @@ function start(): void {
   $("#help").addEventListener("click", () => { void coach(currentView === "polls" ? "polls" : "board", true); });
   void refresh().then(() => {
     if (wantsSettings && token && board) openSettings();
+    // a board without slides yet is all polls, so it opens there and the polls walkthrough plays instead
+    else if (board && board.meta.slides.length === 0) showView("polls");
     else if (board) void coach("board");
   });
   window.setInterval(() => { void refresh(); }, 8000);

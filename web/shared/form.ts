@@ -1,5 +1,5 @@
 import type { Bookmark } from "../create/pdf.ts";
-import { request } from "./api.ts";
+import { loadChunk, request, StaleBuild } from "./api.ts";
 import { boardError, isDeckUrl, isRecord, LIMITS, normalizeText, type BoardInput, type Meta } from "./model.ts";
 import { namesFromOcr, rosterFrom, sectionsFrom, sectionsText } from "./parse.ts";
 import { bookmarkSections, htmlDeckSlides, overlayRuns, pptxTitles, type DeckSection } from "./titles.ts";
@@ -18,6 +18,7 @@ const SOURCE_HINTS: Record<string, string> = {
   manual: "Set the count, and add titles if you have them. Or import the deck.",
   pdf: "Export any deck as a PDF: Canva (Share, Download, PDF), Google Slides (File, Download, PDF), Keynote, or Overleaf for Beamer. Titles, sections and previews are read on this device.",
   pptx: "Titles are read from each slide's title or largest text, on this device.",
+  none: "No slides for now, so the board starts with polls. Add the deck later from Board Settings.",
   link: "Paste a Google Slides deck shared with anyone who has the link, or an HTML deck you host, like a Netlify or reveal.js deck.",
 };
 
@@ -58,10 +59,14 @@ const MARKUP = `
       <option value="pdf">PDF</option>
       <option value="pptx">PowerPoint</option>
       <option value="link">Link</option>
+      <option value="none">None yet, polls only</option>
     </select>
   </div>
   <div class="row source-file" hidden>
     <input id="f-file" type="file" aria-label="Slide file">
+  </div>
+  <div class="row source-report" hidden>
+    <div class="note-bubble"><p><strong>Looks like a report</strong> These pages are portrait, so this is probably a document, not slides. Each page became a slide. Check the titles, or pick the deck's PDF instead.</p></div>
   </div>
   <div class="row field-row source-link" hidden>
     <input id="f-link" type="url" inputmode="url" autocomplete="off" placeholder="https:// Google Slides or deck link" aria-label="Deck link to import">
@@ -77,7 +82,7 @@ const MARKUP = `
     <span id="f-merge-label">Merge overlay pages</span>
     <input id="f-merge" type="checkbox" role="switch" checked>
   </label>
-  <div class="row">
+  <div class="row count-row">
     <label class="row-label" for="f-count">Number of slides</label>
     <div class="stepper">
       <button type="button" data-step="-1" aria-label="One fewer slide">−</button>
@@ -224,7 +229,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     }
     shotStatus.textContent = "Loading the text reader…";
     try {
-      const { screenshotLines } = await import("../create/ocr.ts");
+      const { screenshotLines } = await loadChunk(() => import("../create/ocr.ts"));
       const found = namesFromOcr(await screenshotLines(images, text => { shotStatus.textContent = text; }), names);
       if (found.length === 0) {
         closeShot("No new names were found. Crop the screenshot to the member list, or type the names.");
@@ -245,12 +250,13 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
       updateShotAdd();
       shotAdd.focus();
     } catch (failure) {
+      if (reloadForUpdate(failure, "shot")) return;
       closeShot(failure instanceof Error ? `The screenshot could not be read. ${failure.message}` : "The screenshot could not be read.");
     }
   };
   const imagesIn = (files: FileList | null | undefined): Blob[] => [...files ?? []].filter(item => item.type.startsWith("image/"));
   // the reader is 7 MB, so it starts loading on a clear sign of intent, while the file picker is still open
-  const warm = (): void => { void import("../create/ocr.ts").then(module => module.warmReader()).catch(() => {}); };
+  const warm = (): void => { void loadChunk(() => import("../create/ocr.ts")).then(module => module.warmReader()).catch(() => {}); };
   const shotPick = field<HTMLButtonElement>("#f-shot-pick");
   for (const signal of ["pointerenter", "pointerdown", "focus"]) shotPick.addEventListener(signal, warm, { once: true });
   shotPick.addEventListener("click", () => shotFile.click());
@@ -304,7 +310,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
   if (initial) {
     title.value = initial.title;
     names.push(...initial.roster.map(member => member.name));
-    count.value = String(initial.slides.length);
+    count.value = String(initial.slides.length || 12);
     titles.value = initial.slides.map(slide => slide.title).join("\n").replace(/\n+$/, "");
     sections.value = sectionsText(initial.sections);
     date.value = initial.settings.presentationDate ?? "";
@@ -342,6 +348,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     updateTitleCount();
     fileStatus.textContent = message;
   };
+  const reportNote = field<HTMLDivElement>(".source-report");
   const applyPdf = (): void => {
     if (!pdfPages) return;
     const { runs } = pdfPages;
@@ -352,8 +359,9 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     const slideRuns = merged ? runs : pdfPages.titles.map((_, index) => [index]);
     applyImport(pages.map(page => pdfPages!.titles[page]), pages.map(page => pdfPages!.thumbs[page]), bookmarkSections(pdfPages.bookmarks, slideRuns), [
       `Found ${plural(pages.length, "slide")}${merged ? ` in ${plural(pdfPages.titles.length, "page")}` : ""}.`,
-      pdfPages.portrait ? "These pages are portrait, so this looks like a document, not slides. Each page became a slide." : "Check the titles and fix any that came out wrong.",
-    ].join(" "));
+      pdfPages.portrait ? "" : "Check the titles and fix any that came out wrong.",
+    ].filter(Boolean).join(" "));
+    reportNote.hidden = !pdfPages.portrait;
   };
   merge.addEventListener("change", applyPdf);
 
@@ -363,7 +371,9 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     field<HTMLDivElement>(".source-link").hidden = kind !== "link";
     field<HTMLDivElement>(".source-link-note").hidden = kind !== "link";
     if (kind === "link") void canvaEnabled().then(enabled => { field<HTMLParagraphElement>(".note-canva").hidden = enabled; });
+    for (const row of [".count-row", ".titles-row"]) field<HTMLDivElement>(row).hidden = kind === "none";
     mergeRow.hidden = true;
+    reportNote.hidden = true;
     pdfPages = null;
     fileStatus.textContent = SOURCE_HINTS[kind];
     file.accept = {
@@ -372,8 +382,12 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     }[kind] ?? "";
     file.value = "";
     if (kind === "link") link.focus();
-    else if (kind !== "manual") file.click();
+    else if (kind === "pdf" || kind === "pptx") file.click();
   });
+  if (initial && initial.slides.length === 0) {
+    sourcePicker.value = "none";
+    sourcePicker.dispatchEvent(new Event("change"));
+  }
 
   const busy = async (work: () => Promise<void>, fallback: string): Promise<void> => {
     if (submit) submit.disabled = true;
@@ -383,6 +397,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     } catch (failure) {
       thumbs = null;
       clearImported();
+      if (reloadForUpdate(failure, source())) return;
       fileStatus.textContent = failure instanceof Error ? failure.message : fallback;
     } finally {
       if (submit) submit.disabled = false;
@@ -391,7 +406,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
   };
 
   const importPdf = async (blob: Blob): Promise<void> => {
-    const { readPdf } = await import("../create/pdf.ts");
+    const { readPdf } = await loadChunk(() => import("../create/pdf.ts"));
     const imported = await readPdf(blob, (done, total) => { fileStatus.textContent = `Reading page ${done} of ${total}…`; });
     const runs = overlayRuns(imported.labels);
     pdfPages = { titles: imported.titles, thumbs: imported.thumbs, runs: runs.length ? runs : imported.titles.map((_, index) => [index]), portrait: imported.portrait, bookmarks: imported.bookmarks };
@@ -407,6 +422,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     if (!chosen) return;
     fileStatus.textContent = "Reading the slides…";
     mergeRow.hidden = true;
+    reportNote.hidden = true;
     pdfPages = null;
     void busy(async () => {
       if (source() === "pdf") {
@@ -480,7 +496,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     importLink();
   });
 
-  const DRAFT = "pys-canva-draft";
+  const DRAFT = "pys-draft";
   const saveDraft = (): void => {
     try {
       sessionStorage.setItem(DRAFT, JSON.stringify({
@@ -505,6 +521,13 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     if (typeof draft.date === "string") date.value = draft.date;
     if (typeof draft.polls === "boolean") polls.checked = draft.polls;
     if (typeof draft.sections === "string") sections.value = draft.sections;
+  };
+  // the create page reloads into the new build and keeps what was typed, but a file picked before cannot be carried over
+  const reloadForUpdate = (failure: unknown, kind: string): boolean => {
+    if (!(failure instanceof StaleBuild) || options.initial !== null) return false;
+    saveDraft();
+    location.replace(`${location.pathname}?updated=${encodeURIComponent(kind)}#new`);
+    return true;
   };
   const continueCanva = async (): Promise<void> => {
     fileStatus.textContent = "Asking Canva for the design…";
@@ -534,8 +557,22 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     throw new Error("Canva took too long to export. Try again, or download the PDF yourself.");
   };
   if (options.initial === null) {
-    const outcome = new URLSearchParams(location.search).get("canva");
-    if (outcome) {
+    const query = new URLSearchParams(location.search);
+    const outcome = query.get("canva");
+    const updated = query.get("updated");
+    if (updated) {
+      history.replaceState(null, "", `${location.pathname}#new`);
+      restoreDraft();
+      requestAnimationFrame(() => form.scrollIntoView({ block: "start" }));
+      const message = "Pick your slides was updated while this page was open, so it reloaded and kept what you typed.";
+      if (updated === "shot") shotStatus.textContent = `${message} Pick the screenshot again.`;
+      else if (updated in SOURCE_HINTS) {
+        sourcePicker.value = updated;
+        sourcePicker.dispatchEvent(new Event("change"));
+        if (updated === "link") link.value = deck.value;
+        fileStatus.textContent = `${message} ${updated === "link" ? "Import the link again." : "Pick the file again."}`;
+      }
+    } else if (outcome) {
       history.replaceState(null, "", `${location.pathname}#new`);
       restoreDraft();
       requestAnimationFrame(() => form.scrollIntoView({ block: "start" }));
@@ -559,7 +596,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
       closeShot();
     }
     const named = titleLines();
-    const total = Math.max(Number(count.value) || 0, named.length);
+    const total = source() === "none" ? 0 : Math.max(Number(count.value) || 0, named.length);
     const parsed = sectionsFrom(sections.value);
     const board: BoardInput = {
       title: normalizeText(title.value),

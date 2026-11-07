@@ -57,9 +57,22 @@ jobs:
           GIT_COMMITTER_NAME: sakudiff
           GIT_COMMITTER_EMAIL: aaronjsisonbusiness@gmail.com
           TAG: ${{ github.ref_name }}
+          # notes for people and agents working in the private repository, never published
+          PRIVATE_ONLY: AGENTS.md CLAUDE.md
         run: |
           git remote add public git@github.com:sakudiff/Pick-Your-Slides.git
-          tree=$(git rev-parse "${GITHUB_SHA}^{tree}")
+          # the release's files minus the private-only ones, built in a scratch index so the checkout is untouched
+          export GIT_INDEX_FILE="$RUNNER_TEMP/public-index"
+          git read-tree "$GITHUB_SHA"
+          git rm -q --cached --ignore-unmatch $PRIVATE_ONLY
+          tree=$(git write-tree)
+          unset GIT_INDEX_FILE
+          for file in $PRIVATE_ONLY; do
+            if git cat-file -e "$tree:$file" 2>/dev/null; then
+              echo "::error::$file is still in the tree to publish. Nothing was pushed."
+              exit 1
+            fi
+          done
           # an empty public repository has no main yet, so the first release becomes its initial commit
           if git fetch public main; then
             commit=$(git commit-tree "$tree" -p FETCH_HEAD -m "Release ${TAG}")

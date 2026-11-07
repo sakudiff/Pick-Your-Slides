@@ -26,6 +26,12 @@ test("the Messenger summary lists people in deck order and the open slides", () 
     "Case 3\nSlides 1-2: Ben\nSlides 4-5: Ana\nOpen: 3, 6-8\nhttps://pick.example/b/x");
 });
 
+test("a board without slides yet points the group to its polls", () => {
+  const snapshot: Snapshot = { id: "x", meta: { ...meta, slides: [], sections: [], settings: { ...meta.settings, unit: "slide" } }, revision: null, claims: {}, polls: [] };
+  assert.equal(messengerSummary(snapshot, "https://pick.example/b/x"), "Case 3\nPolls are open. Pick your name and vote.\nhttps://pick.example/b/x");
+  assert.ok(injectPreview("<title>x</title>", snapshot, "https://pick.example").includes("Polls are open. Pick your name and vote."));
+});
+
 test("section boards rate sections and the loose slides between them", () => {
   assert.deepEqual(unitsOf(meta).map(unit => unit.id), ["s1", "x1", "s4", "x2", "s8"]);
   assert.deepEqual(unitsOf(meta)[3].slides, [5, 6, 7]);

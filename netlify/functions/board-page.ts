@@ -11,7 +11,7 @@ export default async function handler(request: Request, context: Context): Promi
   const snapshot = isBoardId(id) ? await readSnapshot(blobKV(getStore({ name: "boards", consistency: "strong" })), id) : null;
   return new Response(injectPreview(await page.text(), snapshot, new URL(request.url).origin), {
     status: snapshot ? 200 : 404,
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow" },
   });
 }
 

@@ -75,6 +75,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 .demo-create { margin-top: 18px; }
 .demo-create[data-press="true"] { transform: translate(2px, 2px); box-shadow: var(--shadow-press); }
 .link-row .row-text output { max-width: 240px; }
+.link-row a.row-text { color: inherit; text-decoration: none; }
+.link-row a.row-text output { color: var(--tint); text-decoration: underline; }
 
 .chat-bar { display: flex; align-items: center; gap: 10px; margin: -16px -14px 12px; padding: 12px 14px; border-bottom: var(--border) solid var(--ink); background: var(--surface); }
 .chat-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: var(--border) solid var(--ink); border-radius: 50%; background: var(--mint); font-size: 12px; font-weight: 800; }
@@ -113,7 +115,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 .demo-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
 /* the step cards are the demo's chapters: they name each scene, light up as it plays, and jump to it on a tap */
 .demo-steps { display: flex; gap: 10px; width: 100%; margin: 0; padding: 4px 2px 8px; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; }
-.demo-steps li { flex: 0 0 min(220px, 72%); scroll-snap-align: start; }
+.demo-steps li { flex: 0 0 min(220px, 72%); scroll-snap-align: center; }
 .demo-steps button { display: flex; align-items: flex-start; gap: 10px; width: 100%; height: 100%; padding: 10px 12px; border: var(--border) solid var(--ink); border-radius: 14px; background: var(--surface); box-shadow: 2px 2px 0 var(--ink); color: var(--label); text-align: left; transition: transform 160ms, background 160ms, box-shadow 160ms; }
 .demo-steps button[data-done="true"] { background: var(--fill); }
 .demo-steps button[aria-current="step"] { background: var(--yellow); color: var(--on-fill); box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }

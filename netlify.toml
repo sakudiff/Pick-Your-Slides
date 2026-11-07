@@ -12,9 +12,19 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
     Referrer-Policy = "same-origin"
     X-Content-Type-Options = "nosniff"
+
+# boards are private links, so only the landing, About and Privacy pages are indexed
+[[headers]]
+  for = "/board/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
 
 # versioned vendor folders and hashed chunks never change in place, so browsers keep them
 [[headers]]

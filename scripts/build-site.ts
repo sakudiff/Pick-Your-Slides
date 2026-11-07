@@ -27,6 +27,8 @@ await mkdir("dist/about", { recursive: true });
 await copyFile("web/about/index.html", "dist/about/index.html");
 await copyFile("web/about/about.css", "dist/about/about.css");
 await copyFile("web/privacy/index.html", "dist/privacy/index.html");
+await copyFile("web/shared/robots.txt", "dist/robots.txt");
+await copyFile("web/shared/sitemap.xml", "dist/sitemap.xml");
 await copyFile("web/board/style.css", "dist/board/style.css");
 // pdf.js runs its parser in a worker that must be served as its own file
 await mkdir(`dist${PDFJS}`, { recursive: true });

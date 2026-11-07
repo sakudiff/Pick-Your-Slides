@@ -27,6 +27,7 @@ export function messengerSummary(snapshot: Snapshot, link: string): string {
   const lines = [snapshot.meta.title];
   for (const [name, slides] of owned) lines.push(`${slides.length === 1 ? "Slide" : "Slides"} ${compressRanges(slides)}: ${name}`);
   if (open.length > 0) lines.push(`Open: ${compressRanges(open)}`);
+  if (snapshot.meta.slides.length === 0) lines.push("Polls are open. Pick your name and vote.");
   lines.push(link);
   return lines.join("\n");
 }

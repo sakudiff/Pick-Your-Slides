@@ -6,6 +6,13 @@ Split a group presentation without the group chat copy-paste. Make a board, send
 
 Live at **https://pick-your-slides.netlify.app**
 
+<p>
+  <a href="docs/media/demo.mp4"><img src="docs/media/demo.gif" alt="A phone making a board from a PDF, opening the member link, and claiming three slides" width="280"></a>
+  <img src="docs/media/square.png" alt="A group chat asking who takes slide 7, answered by a Pick your slides link" width="280">
+</p>
+
+The demo is the live site on a phone, sped up through the loading. [Watch it with sound](docs/media/demo.mp4).
+
 ## What it does
 
 - **Boards from any deck.** Type a slide count, or read the titles from a PDF exported from any app (Canva, Google Slides, Keynote, Overleaf for Beamer), a PowerPoint file, a Google Slides link shared with anyone who has the link, or an HTML deck link (reveal.js, Netlify-hosted decks). PDF bookmarks become sections, Beamer PDFs can merge overlay pages into one slide, and a portrait PDF is flagged as a likely report rather than slides.

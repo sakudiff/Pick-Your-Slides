@@ -298,3 +298,15 @@ test("the presenter feed is public to any origin and holds only title, count, cl
   assert.equal(write.status, 405);
   assert.equal(write.headers.get("Access-Control-Allow-Origin"), "*");
 });
+
+test("a board can start with polls only and get its deck later", async () => {
+  const { send, read, token } = await setup(memoryKV(), { slides: [], sections: [] });
+  assert.equal((await read()).meta.slides.length, 0);
+  assert.notEqual((await send({ kind: "claim", slide: 1, name: "Ana" })).status, 200);
+  assert.equal((await send({ kind: "poll", name: "Ana", title: "", questions: [q("When do we practice?", ["Mon", "Tue"])] })).status, 200);
+  const { revision } = await read();
+  const added = await send({ kind: "meta", board: boardInput(), revision, thumbs: null }, token);
+  assert.equal(added.status, 200);
+  assert.equal(added.body.meta.slides.length, 6);
+  assert.equal(added.body.polls.length, 1);
+});

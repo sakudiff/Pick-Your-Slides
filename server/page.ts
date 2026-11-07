@@ -8,8 +8,8 @@ function escape(text: string): string {
 // Link cards need an absolute image address, so the caller passes the site's origin.
 export function injectPreview(html: string, snapshot: Snapshot | null, origin: string): string {
   const title = snapshot ? `${snapshot.meta.title} · Pick your slides` : "Pick your slides";
-  const description = snapshot
-    ? `${Object.keys(snapshot.claims).length} of ${snapshot.meta.slides.length} slides claimed. Pick yours.`
+  const description = snapshot?.meta.slides.length === 0 ? "Polls are open. Pick your name and vote."
+    : snapshot ? `${Object.keys(snapshot.claims).length} of ${snapshot.meta.slides.length} slides claimed. Pick yours.`
     : "This board is not here.";
   const tags = [
     `<meta property="og:title" content="${escape(title)}">`,

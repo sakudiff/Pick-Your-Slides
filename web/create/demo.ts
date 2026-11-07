@@ -307,6 +307,13 @@ function start(demo: HTMLElement): void {
       step.setAttribute("aria-current", position === index ? "step" : "false");
       step.dataset.done = String(position < index);
     });
+    // on phones the cards scroll sideways, so the row follows the step being acted out without moving the page
+    const strip = steps[index]?.closest<HTMLElement>(".demo-steps");
+    if (strip && strip.scrollWidth > strip.clientWidth) {
+      const card = steps[index].getBoundingClientRect();
+      const left = strip.scrollLeft + card.left - strip.getBoundingClientRect().left - (strip.clientWidth - card.width) / 2;
+      strip.scrollTo({ left, behavior: reduced.matches ? "auto" : "smooth" });
+    }
   };
 
   const stop = (): void => {

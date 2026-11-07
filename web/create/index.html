@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="robots" content="noindex, nofollow">
   <title>Pick your slides · Split the deck, not the group chat</title>
+  <link rel="canonical" href="https://pick-your-slides.netlify.app/">
   <meta name="description" content="Split a group presentation without the group chat copy-paste. Claim slides, rate what you want for a fair split, and vote on polls. No sign-in.">
   <meta property="og:title" content="Pick your slides">
   <meta property="og:description" content="Split the deck, not the group chat. Claim slides, get a fair split, vote on polls. No sign-in.">
@@ -159,11 +159,11 @@
           <h3 class="group-header">Share</h3>
           <section class="group">
             <div class="row link-row">
-              <div class="row-text"><span class="row-label">Member link</span><output id="member-link"></output></div>
+              <a class="row-text" id="open-member" href="#"><span class="row-label">Member link</span><output id="member-link"></output></a>
               <button id="copy-member" type="button" class="plain">Copy</button>
             </div>
             <div class="row link-row">
-              <div class="row-text"><span class="row-label">Organizer link</span><output id="admin-link"></output></div>
+              <a class="row-text" id="open-admin" href="#"><span class="row-label">Organizer link</span><output id="admin-link"></output></a>
               <button id="copy-admin" type="button" class="plain">Copy</button>
             </div>
           </section>

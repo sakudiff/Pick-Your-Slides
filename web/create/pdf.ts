@@ -1,3 +1,4 @@
+import { loadChunk } from "../shared/api.ts";
 import { LIMITS } from "../shared/model.ts";
 import { mostlyPortrait, pickTitle, type TextItem } from "../shared/titles.ts";
 
@@ -8,7 +9,7 @@ export type Imported = { titles: string[]; thumbs: Blob[]; labels: (string | nul
 const THUMB_WIDTH = 320;
 
 export async function readPdf(file: Blob, progress: (done: number, total: number) => void): Promise<Imported> {
-  const pdfjs = await import("pdfjs-dist");
+  const pdfjs = await loadChunk(() => import("pdfjs-dist"));
   pdfjs.GlobalWorkerOptions.workerSrc = `${typeof __PDFJS__ === "string" ? __PDFJS__ : "/vendor"}/pdf.worker.min.mjs`;
   const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
   const document = await task.promise;
@@ -21,10 +22,7 @@ export async function readPdf(file: Blob, progress: (done: number, total: number
   const sizes: { width: number; height: number }[] = [];
   for (let number = 1; number <= document.numPages; number += 1) {
     const page = await document.getPage(number);
-    const content = await page.getTextContent();
-    const items: TextItem[] = content.items.flatMap(item => "str" in item
-      ? [{ str: item.str, height: item.height, x: item.transform[4], y: item.transform[5] }] : []);
-    titles.push(pickTitle(items));
+    titles.push(pickTitle(await pageText(page)));
     sizes.push(page.getViewport({ scale: 1 }));
     const viewport = page.getViewport({ scale: THUMB_WIDTH / page.getViewport({ scale: 1 }).width });
     const canvas = window.document.createElement("canvas");
@@ -42,6 +40,20 @@ export async function readPdf(file: Blob, progress: (done: number, total: number
 }
 
 type PdfDocument = Awaited<ReturnType<typeof import("pdfjs-dist").getDocument>["promise"]>;
+type PdfPage = Awaited<ReturnType<PdfDocument["getPage"]>>;
+type TextChunk = Awaited<ReturnType<PdfPage["getTextContent"]>>;
+
+// getTextContent iterates a ReadableStream with for await, which Safari and every iPhone browser cannot do, so the chunks are read by hand
+async function pageText(page: PdfPage): Promise<TextItem[]> {
+  const reader: ReadableStreamDefaultReader<TextChunk> = page.streamTextContent().getReader();
+  const items: TextItem[] = [];
+  for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+    for (const item of chunk.value.items) {
+      if ("str" in item) items.push({ str: item.str, height: item.height, x: item.transform[4], y: item.transform[5] });
+    }
+  }
+  return items;
+}
 
 // Only the top level, which Beamer and most exporters use for sections. A bookmark that does not resolve
 // to a page is skipped, since a broken outline should not stop the slides from loading.

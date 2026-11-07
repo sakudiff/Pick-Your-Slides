@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pick your slides</title>
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#fff4df">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/board/style.css">
+  <script type="module" src="/board/app.js"></script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="toolbar-inner">
+      <a class="home-mark" href="/" aria-label="Pick your slides home" title="Pick your slides home"><img src="/mark.svg" alt="" width="28" height="28"></a>
+      <div class="toolbar-title">
+        <h1 id="title">Loading…</h1>
+        <p id="summary"></p>
+      </div>
+      <button id="me" class="identity" type="button" aria-label="Choose who you are">Who are you?</button>
+      <button id="help" class="icon help" type="button" aria-label="How to use this board" title="How to use">?</button>
+      <button id="share" class="icon" type="button" aria-label="Copy the split for the group chat" title="Copy for group chat" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>
+      </button>
+      <button id="more" class="icon" type="button" aria-label="More">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>
+      </button>
+    </div>
+    <div class="toolbar-inner views-row">
+      <div class="segmented views" role="tablist" aria-label="Board views">
+        <button role="tab" data-view="slides" aria-controls="view-slides" type="button">Slides</button>
+        <button role="tab" data-view="polls" aria-controls="view-polls" type="button">Polls</button>
+        <button role="tab" data-view="order" aria-controls="view-order" type="button">Order</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="column board">
+    <section id="missing" hidden>
+      <div class="empty-state">
+        <h2>Board not found</h2>
+        <p id="missing-reason">Check the link, or make a new board.</p>
+        <a class="primary button" href="/">New Board</a>
+      </div>
+    </section>
+
+    <section id="view-slides" role="tabpanel" data-view-panel="slides" hidden>
+      <div class="view-tools">
+        <div class="segmented small" role="radiogroup" aria-label="Show">
+          <label><input type="radio" name="filter" value="all" checked><span>All</span></label>
+          <label><input type="radio" name="filter" value="open"><span>Open</span></label>
+          <label><input type="radio" name="filter" value="mine"><span>Mine</span></label>
+        </div>
+        <div id="people" class="people" aria-label="Who's taking what"></div>
+      </div>
+      <div id="slides"></div>
+    </section>
+
+    <section id="view-polls" role="tabpanel" data-view-panel="polls" hidden>
+      <div class="view-tools">
+        <p id="poll-caption" class="caption"></p>
+        <button id="new-poll" type="button" class="plain">New Poll</button>
+      </div>
+      <div id="polls"></div>
+    </section>
+
+    <section id="view-order" role="tabpanel" data-view-panel="order" hidden>
+      <div id="order"></div>
+    </section>
+  </main>
+
+  <dialog id="poll-sheet" class="sheet" aria-labelledby="poll-sheet-title">
+    <form id="poll-form" method="dialog" novalidate>
+      <header class="sheet-bar">
+        <button type="button" class="plain" data-close>Cancel</button>
+        <h2 id="poll-sheet-title">New Poll</h2>
+        <button type="submit" class="plain strong">Start</button>
+      </header>
+      <div class="sheet-body">
+        <section class="group">
+          <div class="row field-row"><input id="poll-title" maxlength="120" placeholder="Title, optional" aria-label="Poll title, optional"></div>
+        </section>
+        <p class="group-footer">Ask one question, or several at once, like a time and a template.</p>
+        <div id="poll-questions"></div>
+        <button type="button" class="plain strong add-question" id="poll-add-question">Add Question</button>
+        <p class="form-error" id="poll-error" role="alert"></p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="split-sheet" class="sheet" aria-labelledby="split-sheet-title">
+    <header class="sheet-bar">
+      <button type="button" class="plain" data-close>Close</button>
+      <h2 id="split-sheet-title">Split Evenly</h2>
+      <button type="button" class="plain strong" id="apply-split">Apply</button>
+    </header>
+    <div class="sheet-body" id="split"></div>
+  </dialog>
+
+  <dialog id="settings-sheet" class="sheet" aria-labelledby="settings-sheet-title">
+    <header class="sheet-bar">
+      <button type="button" class="plain" data-close>Cancel</button>
+      <h2 id="settings-sheet-title">Board Settings</h2>
+      <button type="submit" class="plain strong" form="edit">Save</button>
+    </header>
+    <div class="sheet-body">
+      <form id="edit" novalidate></form>
+      <h3 class="group-header">Organizer</h3>
+      <section class="group">
+        <div class="row link-row">
+          <div class="row-text"><span class="row-label">Organizer link</span><output id="admin-link"></output></div>
+          <button id="copy-admin" type="button" class="plain">Copy</button>
+        </div>
+      </section>
+      <p class="group-footer">Open this link on another device to manage the board there. As organizer, tap anyone's slide to free it.</p>
+      <h3 class="group-header">Presenter Bar</h3>
+      <section class="group">
+        <div class="row link-row">
+          <div class="row-text"><span class="row-label">Script tag</span><output id="embed-snippet" class="code"></output></div>
+          <button id="copy-embed" type="button" class="plain">Copy</button>
+        </div>
+      </section>
+      <p class="group-footer">For an HTML deck you host, like a Netlify deck. Paste this before &lt;/body&gt; and the deck shows who presents each slide, live from this board.</p>
+    </div>
+  </dialog>
+</body>
+</html>

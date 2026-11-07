@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Privacy · Pick your slides</title>
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#fff4df">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preload" href="/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/base.css">
+  <link rel="stylesheet" href="/landing.css">
+  <script type="module" src="/nav.js"></script>
+  <style>
+    .prose h2 { margin: 28px 4px 6px; font-size: 20px; }
+    .prose p, .prose li { color: var(--label); font-size: 16px; line-height: 1.5; }
+    .prose p { margin: 0 4px 10px; }
+    .prose ul { margin: 0 0 10px; padding-left: 24px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="nav-name" href="/" aria-label="Pick your slides"><img class="nav-mark" src="/mark.svg" alt="" width="30" height="30"><span class="nav-word">Pick your slides</span></a>
+      <div class="nav-actions">
+        <a class="nav-link" href="/about/">About</a>
+        <button id="my-boards" class="nav-boards" type="button" hidden><span><span class="long">My </span>Boards</span><span class="count"></span></button>
+        <a class="nav-action" href="/#new">New Board</a>
+        <button id="nav-menu" class="icon nav-menu" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="column prose">
+    <header class="large-title">
+      <h1>Privacy</h1>
+      <p>What Pick your slides keeps, for how long, and what never leaves your device.</p>
+    </header>
+
+    <h2>No accounts</h2>
+    <p>There is no sign-up and no tracking. The site sets no cookies, except a short-lived one during a Canva import, described below. Your browser keeps your name on each board, the organizer secret for boards you made, a list of boards you opened and the last copy of each in its own local storage on that device. The organizer secret is sent only with organizer actions, to prove they come from the organizer.</p>
+
+    <h2>What a board stores</h2>
+    <ul>
+      <li>The board title, slide titles and sections, the optional deck link and presentation date.</li>
+      <li>The member names the organizer typed or confirmed, with their colours.</li>
+      <li>Who claimed which slide, each member's Want, Okay or No ratings, and poll votes.</li>
+      <li>Small preview images of the slides, if the organizer imported a PDF.</li>
+      <li>A hash of the organizer secret. The secret itself is only in the organizer link.</li>
+    </ul>
+    <p>Anyone with a board's link can read it, so share links only with your group.</p>
+
+    <h2>How long it is kept</h2>
+    <p>A board is deleted 90 days after its last change. Slide previews are deleted 30 days after the presentation date. The organizer can delete a board at any time, which removes everything above at once.</p>
+
+    <h2>Read on your device</h2>
+    <p>PDF and PowerPoint files, and screenshots of member lists, are read in your browser. The files and screenshots are not uploaded. Only the titles, names and previews you confirm are sent to the board.</p>
+
+    <h2>Deck links</h2>
+    <p>When you import an HTML deck by link, this site fetches that one public page so your browser can count its slides. The page is passed straight back to you and is not stored.</p>
+    <p>A Google Slides link works the same way. This site asks Google for that deck's PDF export, which works only when the deck is shared with anyone who has the link, and passes the PDF straight to your browser without storing it. Your browser then reads it like any other PDF.</p>
+    <p>The presenter bar script on a deck asks this site for the board's title, slide count, member names, colours and claims, and nothing else.</p>
+
+    <h2>Canva</h2>
+    <p>Canva import is off until Canva approves this app for everyone. Until then, export the design as a PDF. When it is turned on, it asks Canva for permission to read one design's title and page count and to export it as a PDF. Canva's access token is stored on the server for at most one hour, is never sent to your browser, and is deleted once the PDF is fetched. The refresh token is discarded straight away. A cookie links your browser to that import for the same hour. The PDF is passed to your browser and read there like any other PDF.</p>
+
+    <h2>Hosting</h2>
+    <p>The site runs on Netlify. Netlify sees your IP address to serve pages and limit how often one network can create boards or fetch decks.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this policy or your data: open an issue at <a href="https://github.com/sakudiff/Pick-Your-Slides/issues" rel="noopener">github.com/sakudiff/Pick-Your-Slides/issues</a>. To report a security problem privately, use the repository's <a href="https://github.com/sakudiff/Pick-Your-Slides/security/advisories/new" rel="noopener">security advisory form</a>.</p>
+
+    <p><a href="/">Back to Pick your slides</a> · <a href="/about/">About</a></p>
+  </main>
+</body>
+</html>

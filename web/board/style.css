@@ -1,0 +1,81 @@
+.toolbar { position: sticky; top: 0; z-index: 10; padding-top: env(safe-area-inset-top); background: var(--background); border-bottom: var(--border) solid var(--ink); }
+.toolbar-inner { display: flex; align-items: center; gap: 8px; width: min(640px, 100%); margin: 0 auto; padding: 9px 12px 9px 16px; }
+.toolbar-title { flex: 1 1 auto; min-width: 0; }
+/* the brand sticker doubles as the way home */
+.home-mark { flex: 0 0 auto; display: grid; place-items: center; width: 34px; height: 34px; margin-right: 2px; border-radius: 10px; }
+.home-mark img { width: 28px; height: 28px; transition: transform 150ms; }
+.home-mark:hover img { transform: rotate(-6deg) scale(1.06); }
+.toolbar-title h1 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toolbar-title p { margin: 1px 0 0; font-size: 12px; font-weight: 600; color: var(--secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.identity { flex: 0 0 auto; min-width: 0; max-width: 46%; min-height: 34px; padding: 3px 12px; border: var(--border) solid var(--ink); border-radius: 17px; background: var(--yellow); color: var(--on-fill); box-shadow: 2px 2px 0 var(--ink); font-size: 15px; font-weight: 800; white-space: nowrap; }
+.identity[data-chosen="true"] { padding: 0; border: 0; background: none; box-shadow: none; color: var(--label); }
+.identity .pill { max-width: 100%; box-shadow: 2px 2px 0 var(--ink); }
+.views-row { padding-top: 0; }
+.views { display: flex; width: 100%; margin: 0; }
+.views > button { flex: 1 1 0; min-width: 0; padding: 6px 4px; }
+
+.board { padding-top: 4px; }
+.view-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin: 16px 2px 0; }
+.view-tools .segmented { margin-left: 0; }
+.view-tools .plain { margin-left: auto; }
+.view-tools .caption { flex: 1 1 auto; min-width: 0; }
+/* the chip row scrolls sideways, and the fade says so instead of a hard cut */
+.people { display: flex; gap: 6px; flex: 1 1 200px; min-width: 0; padding: 2px 3px 4px 2px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
+.people::-webkit-scrollbar { display: none; }
+.people .pill { max-width: none; flex: 0 0 auto; }
+
+.slide-number { flex: 0 0 auto; width: 2.2em; color: var(--label); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.slide-row { cursor: pointer; }
+.slide-row[data-mine="true"] { background: var(--mine-fill); }
+.slide-row[data-mine="true"]::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--yellow); border-right: var(--hairline) solid var(--ink); }
+.slide-row .pill { max-width: 40%; }
+.claim { margin-left: auto; color: var(--tint); font-size: 15px; font-weight: 800; text-decoration: underline 2px; text-underline-offset: 3px; }
+.thumb { flex: 0 0 auto; width: 52px; aspect-ratio: 16 / 9; border: var(--hairline) solid var(--ink); border-radius: 6px; background: var(--fill); object-fit: cover; }
+
+
+.poll-header { display: flex; align-items: center; gap: 4px; margin: 26px 4px 8px 0; }
+.poll-header .group-header { flex: 1 1 auto; margin: 0 0 0 6px; text-transform: none; font-size: 18px; font-weight: 800; color: var(--label); letter-spacing: -.01em; }
+.option { isolation: isolate; }
+/* the vote share fills the row behind its text, like a bar chart drawn with a marker */
+.option::after { content: ""; position: absolute; z-index: -1; left: 0; top: 0; bottom: 0; width: var(--share); background: var(--vote-fill); transition: width 250ms; }
+.option[aria-checked="true"]::after { background: var(--vote-mine-fill); }
+.option .row-text { flex-direction: column; align-items: flex-start; gap: 1px; }
+.option .caption { color: var(--secondary); }
+.check { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; border: var(--border) solid var(--ink); background: var(--surface); }
+.option[role="checkbox"] .check { border-radius: 7px; }
+.option[aria-checked="true"] .check { background: var(--yellow) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23141414' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 15px no-repeat; }
+
+#order .row { min-height: 42px; }
+#split .row-text { flex-direction: column; align-items: flex-start; gap: 1px; }
+.empty-state { margin: 14vh auto 0; max-width: 360px; padding: 28px 20px; border: var(--border) solid var(--ink); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-hard); text-align: center; }
+.empty-state h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 6px; }
+.empty-state p { color: var(--secondary); margin: 0 0 20px; }
+.empty-state .primary { display: inline-block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .option::after { transition: none; }
+}
+@media print {
+  .toolbar .icon, .identity, .views-row, .view-tools { display: none !important; }
+  .group, .identity .pill { box-shadow: none; }
+}
+.link-row output.code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+.poll-question { margin: 16px 6px 8px; font-size: 15px; font-weight: 800; }
+.question-block + .question-block { margin-top: 6px; }
+.question-block .poll-header .plain { font-size: 15px; }
+.add-question { display: block; margin: 14px 2px 0; }
+/* How to use: shines until the walkthrough has been seen once */
+.help { font-size: 18px; font-weight: 800; line-height: 1; overflow: hidden; position: relative; }
+.help[data-shine="true"] { background: var(--yellow); color: var(--on-fill); }
+.help[data-shine="true"]::after { content: ""; position: absolute; inset: -40% auto -40% -60%; width: 34%; background: #ffffffb3; transform: skewX(-18deg); animation: shine 2.6s ease-in-out infinite; }
+@keyframes shine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) {
+  .help[data-shine="true"]::after { animation: none; display: none; }
+  .help[data-shine="true"] { box-shadow: 0 0 0 3px var(--yellow); }
+}
+/* on phones the title needs the room, and sharing is also in the ⋯ menu as Copy for Group Chat */
+@media (max-width: 420px) {
+  #share { display: none; }
+  .toolbar-inner { gap: 6px; padding-left: 10px; padding-right: 10px; }
+}
+.poll-question + .group { margin-top: 0; }

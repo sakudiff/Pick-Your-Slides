@@ -1,0 +1,177 @@
+/* Landing-only rules. The tool's own rules stay in base.css, so the form looks the same here and in Board Settings. */
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.nav { position: sticky; top: 0; z-index: 10; padding-top: env(safe-area-inset-top); background: var(--background); border-bottom: var(--border) solid var(--ink); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; width: min(1040px, 100%); margin: 0 auto; padding: 10px 16px; }
+.nav-name { display: inline-flex; align-items: center; gap: 8px; color: var(--label); font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.nav-mark { flex: 0 0 auto; width: 30px; height: 30px; transition: transform 150ms; }
+.nav-name:hover .nav-mark { transform: rotate(-6deg) scale(1.06); }
+.nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+.nav-inner { gap: 10px; }
+.nav-name, .nav-action, .nav-boards, .nav-link { white-space: nowrap; }
+.nav-link { padding: 4px 8px; border-radius: 12px; color: var(--label); font-size: 15px; font-weight: 700; }
+.nav-link:hover { background: var(--fill); }
+.nav-link[aria-current="page"] { text-decoration: underline 2px var(--coral); text-underline-offset: 4px; }
+.nav-boards { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border: var(--hairline) solid var(--ink); border-radius: 14px; background: var(--surface); font-size: 15px; font-weight: 700; }
+.nav-boards .count { min-width: 22px; padding: 1px 6px; border-radius: 10px; background: var(--ink); color: var(--background); font-size: 12px; font-weight: 800; text-align: center; }
+.board-entry .row-text { flex-direction: column; align-items: stretch; gap: 2px; color: var(--label); font-weight: 700; }
+.board-entry .row-title { white-space: normal; }
+.nav-action { padding: 5px 14px; border: var(--border) solid var(--ink); border-radius: 14px; background: var(--yellow); color: var(--on-fill); box-shadow: 2px 2px 0 var(--ink); font-size: 15px; font-weight: 800; }
+.nav-action:active { transform: translate(1px, 1px); box-shadow: var(--shadow-press); }
+@media (max-width: 520px) {
+  .nav-inner { padding: 10px 12px; }
+  .nav-name { font-size: 16px; }
+  .nav-name { gap: 6px; }
+  .nav-mark { width: 26px; height: 26px; }
+  .nav-boards .long { display: none; }
+  .nav-action, .nav-boards, .nav-link { font-size: 14px; }
+  .nav-link { padding: 4px 4px; }
+  .nav-action { padding: 5px 10px; }
+}
+/* on phones About and My Boards fold into a menu, so the name and New Board keep their room */
+.nav-menu { display: none; }
+@media (max-width: 600px) {
+  .nav-link, .nav-boards { display: none !important; }
+  .nav-menu { display: grid; width: 34px; height: 34px; }
+}
+/* the About page has no menu script, and its own link is the page you are on */
+@media (max-width: 600px) {
+  .nav-link[aria-current="page"] { display: none; }
+}
+
+.hero { display: grid; gap: 32px; width: min(1040px, 100%); margin: 0 auto; padding: 36px 16px 8px; }
+.hero h1 { margin: 0; font-size: 40px; line-height: 1; font-weight: 800; letter-spacing: -.035em; }
+.hero h1::after { content: ""; display: block; width: 112px; height: 10px; margin: 16px 0 18px; border: var(--border) solid var(--ink); border-radius: 6px; background: var(--coral); }
+.hero p { margin: 0; max-width: 32em; color: var(--secondary); font-size: 18px; line-height: 1.45; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 26px; }
+.hero-actions .primary { padding: 12px 24px; }
+
+.preview-bar { display: flex; align-items: center; gap: 8px; padding: 2px 2px 12px; }
+.preview-bar .toolbar-title { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+.preview-bar strong { font-size: 16px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.preview-bar span:not(.pill, .avatar, .pill-name) { font-size: 12px; font-weight: 600; color: #4f4a42; }
+.preview-views { display: flex; width: 100%; margin: 0 0 4px; border-color: #141414; background: #f3e6c9; }
+.preview-views span { flex: 1 1 0; min-width: 0; padding: 4px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; }
+.preview-views .on { background: #141414; color: #fff4df; font-weight: 800; }
+/* The demo: the real app markup with sample data, acted out by cursors. Only transform and opacity move. */
+.demo { display: grid; gap: 12px; justify-items: center; }
+/* the step row scrolls inside itself, so it must not widen the hero grid on phones */
+.hero > *, .demo > *, .demo-controls { min-width: 0; }
+.demo-controls { width: 100%; }
+.demo-stage { position: relative; width: min(100%, 400px); height: 470px; overflow: hidden; border: var(--border) solid var(--ink); border-radius: 22px; background: var(--sky); box-shadow: 6px 6px 0 var(--ink); transform: rotate(-1.2deg); user-select: none; pointer-events: none; }
+/* the old scene leaves quickly and the new one arrives just after, so the two never blur together */
+.scene { position: absolute; inset: 0; padding: 16px 14px; opacity: 0; transform: translateY(-8px); transition: opacity 160ms, transform 160ms; }
+.scene[data-active="true"] { opacity: 1; transform: none; transition: opacity 320ms 140ms, transform 420ms 140ms cubic-bezier(.3, 1.3, .5, 1); }
+.scene .group { margin-top: 0; box-shadow: 3px 3px 0 var(--ink); }
+.scene .group-header { margin: 14px 4px 6px; }
+.scene-title { margin: 2px 4px 12px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.scene .row { min-height: 40px; }
+.typed { margin-left: auto; font-weight: 700; }
+.typed:empty::after, .typed::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -2px; background: var(--ink); animation: caret 900ms steps(1) infinite; }
+.demo-tokens { min-height: 46px; }
+.stepper .step-button { width: 36px; text-align: center; font-weight: 700; }
+.stepper .step-value { width: 40px; border-inline: var(--hairline) solid var(--ink); background: var(--surface); text-align: center; font-weight: 800; }
+.demo-create { margin-top: 18px; }
+.demo-create[data-press="true"] { transform: translate(2px, 2px); box-shadow: var(--shadow-press); }
+.link-row .row-text output { max-width: 240px; }
+
+.chat-bar { display: flex; align-items: center; gap: 10px; margin: -16px -14px 12px; padding: 12px 14px; border-bottom: var(--border) solid var(--ink); background: var(--surface); }
+.chat-avatar { display: grid; place-items: center; width: 34px; height: 34px; border: var(--border) solid var(--ink); border-radius: 50%; background: var(--mint); font-size: 12px; font-weight: 800; }
+.chat-name { display: flex; flex-direction: column; }
+.chat-name strong { font-size: 16px; }
+.chat-name span { font-size: 12px; color: var(--secondary); }
+.chat-log { display: flex; flex-direction: column; gap: 10px; }
+.bubble { max-width: 82%; padding: 9px 12px; border: var(--border) solid var(--ink); border-radius: 18px; background: var(--surface); font-size: 15px; line-height: 1.3; opacity: 0; transform: translateY(12px) scale(.96); transition: opacity 300ms, transform 340ms cubic-bezier(.3, 1.4, .5, 1); }
+.bubble[data-shown="true"] { opacity: 1; transform: none; }
+.bubble b { display: block; font-size: 12px; font-weight: 800; }
+.bubble.out { align-self: flex-end; border-bottom-right-radius: 6px; background: var(--yellow); }
+.bubble.in { align-self: flex-start; border-bottom-left-radius: 6px; }
+.link-card { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; padding: 9px 10px; border: var(--hairline) solid var(--ink); border-radius: 12px; background: var(--surface); }
+.link-card strong { font-size: 14px; }
+.link-card span { font-size: 13px; color: var(--secondary); }
+.link-card em { font-size: 12px; font-style: normal; color: var(--tertiary); }
+
+.demo-slides .row { min-height: 37px; padding-top: 4px; padding-bottom: 4px; font-size: 15px; }
+.demo-slides .row[data-claimed="true"] { background: color-mix(in srgb, var(--yellow) 18%, var(--surface)); }
+.demo-slides .claim { font-size: 14px; }
+.pill.pop, .token.pop { animation: pop 380ms cubic-bezier(.3, 1.6, .5, 1); }
+.poll-tools { display: flex; justify-content: flex-end; margin: 10px 2px 2px; }
+.demo-poll { opacity: 0; transform: translateY(16px) scale(.96); transform-origin: top center; transition: opacity 300ms, transform 360ms cubic-bezier(.3, 1.4, .5, 1); }
+.demo-poll[data-shown="true"] { opacity: 1; transform: none; }
+.poll-question { margin: 6px 4px 8px; font-size: 18px; font-weight: 800; }
+.demo-poll .option { position: relative; isolation: isolate; }
+.demo-poll .option::after { content: ""; position: absolute; z-index: -1; inset: 0 auto 0 0; width: var(--share); background: var(--vote-fill); transition: width 400ms cubic-bezier(.3, 1.2, .5, 1); }
+.demo-poll .option[aria-checked="true"]::after { background: var(--vote-mine-fill); }
+.demo-poll .check { flex: 0 0 auto; width: 22px; height: 22px; border: var(--border) solid var(--ink); border-radius: 50%; background: var(--surface); }
+.demo-poll .option[aria-checked="true"] .check { background: var(--yellow) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23141414' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 14px no-repeat; }
+
+.demo-toast { position: absolute; left: 50%; bottom: 18px; z-index: 3; padding: 9px 14px; border: var(--border) solid var(--ink); border-radius: 14px; background: var(--yellow); box-shadow: var(--shadow-small); font-size: 14px; font-weight: 700; white-space: nowrap; opacity: 0; transform: translate(-50%, 30px) rotate(-2deg); transition: opacity 200ms, transform 320ms cubic-bezier(.3, 1.4, .5, 1); }
+.demo-toast[data-visible="true"] { opacity: 1; transform: translate(-50%, 0) rotate(-1deg); }
+
+
+.demo-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+/* the step cards are the demo's chapters: they name each scene, light up as it plays, and jump to it on a tap */
+.demo-steps { display: flex; gap: 10px; width: 100%; margin: 0; padding: 4px 2px 8px; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; }
+.demo-steps li { flex: 0 0 min(220px, 72%); scroll-snap-align: start; }
+.demo-steps button { display: flex; align-items: flex-start; gap: 10px; width: 100%; height: 100%; padding: 10px 12px; border: var(--border) solid var(--ink); border-radius: 14px; background: var(--surface); box-shadow: 2px 2px 0 var(--ink); color: var(--label); text-align: left; transition: transform 160ms, background 160ms, box-shadow 160ms; }
+.demo-steps button[data-done="true"] { background: var(--fill); }
+.demo-steps button[aria-current="step"] { background: var(--yellow); color: var(--on-fill); box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }
+.step-n { display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border: var(--border) solid var(--ink); border-radius: 50%; background: var(--surface); color: var(--label); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.step-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.step-text strong { font-size: 15px; font-weight: 800; }
+.step-text span { font-size: 13px; line-height: 1.35; color: var(--secondary); }
+.demo-steps button[aria-current="step"] .step-text span { color: #3d3830; }
+.demo-pause { padding: 4px 11px; border: var(--hairline) dashed var(--ink); border-radius: 14px; background: none; font-size: 13px; font-weight: 700; }
+
+/* the deck file that drops onto the form in the first scene */
+.demo-file { position: absolute; z-index: 2; top: 0; left: 0; display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; border: var(--border) solid var(--ink); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow-small); font-size: 14px; font-weight: 700; opacity: 0; transform: translate(var(--from-x, 230px), var(--from-y, -60px)) rotate(8deg); transition: transform 620ms cubic-bezier(.3, 1.3, .5, 1), opacity 200ms; }
+.demo-file[data-shown="true"] { opacity: 1; transform: translate(var(--x, 230px), var(--y, 300px)) rotate(-3deg); }
+.demo-file[data-landed="true"] { opacity: 0; transition: opacity 260ms; transform: translate(var(--x, 230px), var(--y, 300px)) scale(.8); }
+.file-kind { display: grid; place-items: center; min-width: 46px; height: 28px; padding: 0 6px; border: var(--hairline) solid var(--ink); border-radius: 7px; background: var(--coral); color: var(--on-fill); font-size: 11px; font-weight: 800; letter-spacing: .03em; }
+.demo-source { margin-left: auto; font-weight: 700; }
+.demo-source[data-flash="true"] { animation: pop 380ms cubic-bezier(.3, 1.6, .5, 1); }
+
+/* the New Board form is one object: a sheet with its own tab, holding every group */
+.board-card { position: relative; margin-top: 56px; padding: 34px 16px 20px; border: var(--border) solid var(--ink); border-radius: 22px; background: var(--background); box-shadow: 6px 6px 0 var(--ink); }
+.board-card .group { box-shadow: var(--shadow-small); }
+.board-card-title { position: absolute; top: -20px; left: 18px; margin: 0; padding: 4px 14px; border: var(--border) solid var(--ink); border-radius: 12px; background: var(--yellow); color: var(--on-fill); box-shadow: 3px 3px 0 var(--ink); font-size: 22px; font-weight: 800; letter-spacing: -.02em; transform: rotate(-1.5deg); }
+.board-card > form > .group:first-child { margin-top: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@keyframes caret { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .scene, .bubble, .demo-poll, .demo-toast, .cursor, .demo-poll .option::after, .demo-file, .demo-steps button { transition: none; }
+  .pill.pop, .token.pop, .typed::after { animation: none; }
+}
+
+.slide-number { flex: 0 0 auto; width: 2.2em; color: var(--label); font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.claim { margin-left: auto; color: var(--tint); font-size: 15px; font-weight: 800; text-decoration: underline 2px; text-underline-offset: 3px; }
+
+.landing { padding-top: 0; }
+.section-title { margin: 48px 2px 14px; font-size: 30px; font-weight: 800; letter-spacing: -.03em; }
+.anchor { position: relative; top: -70px; }
+
+.faq { display: grid; gap: 10px; }
+.faq-item { border: var(--border) solid var(--ink); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-small); }
+.faq-item > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 50px; padding: 10px 16px; font-weight: 700; }
+.faq-item > summary::after { content: "+"; display: grid; place-items: center; flex: 0 0 auto; width: 26px; height: 26px; border: var(--border) solid var(--ink); border-radius: 50%; font-size: 18px; font-weight: 800; line-height: 1; }
+.faq-item[open] > summary::after { content: "−"; background: var(--yellow); color: var(--on-fill); }
+.faq-item p { margin: 0; padding: 0 16px 14px; color: var(--secondary); font-size: 15px; line-height: 1.45; }
+.fine-print a { color: var(--tint); }
+
+@media (min-width: 900px) {
+  .hero { grid-template-columns: 1.05fr 1fr; align-items: center; gap: 56px; padding-top: 64px; padding-bottom: 24px; }
+  .hero h1 { font-size: 56px; }
+  .board-card { padding: 38px 24px 24px; }
+}
+/* wide screens put the step cards in a column beside the stage */
+@media (min-width: 1000px) {
+  .hero { grid-template-columns: minmax(0, 1fr) auto; gap: 40px; }
+  .demo { grid-template-columns: 400px 196px; grid-template-areas: "stage steps" "stage controls"; align-items: start; column-gap: 16px; row-gap: 10px; }
+  .demo-stage { grid-area: stage; width: 400px; }
+  .demo-controls { grid-area: steps; flex-direction: column; align-items: stretch; }
+  .demo-steps { flex-direction: column; padding: 0; overflow: visible; }
+  .demo-steps li { flex: 0 0 auto; }
+  .demo-pause { align-self: flex-start; }
+}

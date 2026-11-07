@@ -1,0 +1,31 @@
+/* About page. Built from the landing's nav and section titles, so it reads as part of the same site. */
+.about { padding-top: 8px; }
+.about-hero { padding: 28px 2px 4px; }
+.eyebrow { display: inline-block; margin: 0 0 14px; padding: 3px 10px; border: var(--hairline) solid var(--ink); border-radius: 12px; background: var(--yellow); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.about-hero h1 { margin: 0 0 16px; font-size: 36px; line-height: 1.04; font-weight: 800; letter-spacing: -.03em; }
+.lead { margin: 0; color: var(--secondary); font-size: 18px; line-height: 1.5; }
+
+.principles { display: grid; gap: 12px; }
+.principle { padding: 14px 16px; border: var(--border) solid var(--ink); border-radius: var(--radius); background: var(--card, var(--surface)); color: var(--on-fill); box-shadow: var(--shadow-small); }
+.principle h3 { margin: 0 0 4px; font-size: 18px; font-weight: 800; }
+.principle p { margin: 0; font-size: 15px; line-height: 1.45; color: #2b2823; }
+
+.sibling { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: var(--border) solid var(--ink); border-radius: 18px; background: var(--surface); box-shadow: 5px 5px 0 var(--ink); color: var(--label); font-weight: 500; transform: rotate(-.6deg); transition: transform 150ms; }
+.sibling:hover { transform: rotate(0deg) translateY(-2px); }
+.sibling-mark { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; border: var(--border) solid var(--ink); border-radius: 12px; background: var(--mint); font-size: 22px; font-weight: 800; transform: rotate(6deg); }
+.sibling-text { display: flex; flex-direction: column; gap: 4px; }
+.sibling-text strong { font-size: 19px; font-weight: 800; }
+.sibling-text span { font-size: 15px; line-height: 1.45; color: var(--secondary); }
+.sibling-text em { font-size: 13px; font-style: normal; font-weight: 700; color: var(--tint); }
+
+.about-link { flex-direction: column; align-items: flex-start; gap: 1px; padding-top: 10px; padding-bottom: 10px; color: var(--label); font-weight: 700; }
+.about-link .row-title { white-space: normal; }
+.about-link .value { margin-left: 0; color: var(--tint); font-size: 14px; font-weight: 700; word-break: break-all; }
+.credits .value { text-align: right; }
+.credits .row-title { white-space: normal; }
+
+@media (min-width: 700px) {
+  .principles { grid-template-columns: 1fr 1fr; }
+  .about-hero h1 { font-size: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { .sibling { transition: none; } }

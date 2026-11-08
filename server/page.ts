@@ -18,7 +18,7 @@ export function injectPreview(html: string, snapshot: Snapshot | null, origin: s
     `<meta property="og:image" content="${escape(`${origin}/og.png`)}">`,
     `<meta property="og:image:width" content="1200">`,
     `<meta property="og:image:height" content="630">`,
-    `<meta property="og:image:alt" content="Pick your slides: split the deck, not the group chat.">`,
+    `<meta property="og:image:alt" content="Pick your slides: group presentations, sorted.">`,
     `<meta name="twitter:card" content="summary_large_image">`,
   ].join("\n  ");
   return html.replace(/<title>[^<]*<\/title>/, `<title>${escape(title)}</title>\n  ${tags}`);

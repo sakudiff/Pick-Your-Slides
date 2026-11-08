@@ -170,6 +170,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
 /* wide screens put the step cards in a column beside the stage */
 @media (min-width: 1000px) {
   .hero { grid-template-columns: minmax(0, 1fr) auto; gap: 40px; }
+  /* the headline column narrows beside the step cards, and its longest word must still fit on one line */
+  .hero h1 { font-size: clamp(42px, 4.5vw, 48px); }
   .demo { grid-template-columns: 400px 196px; grid-template-areas: "stage steps" "stage controls"; align-items: start; column-gap: 16px; row-gap: 10px; }
   .demo-stage { grid-area: stage; width: 400px; }
   .demo-controls { grid-area: steps; flex-direction: column; align-items: stretch; }

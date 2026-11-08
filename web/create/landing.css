@@ -177,3 +177,6 @@ html { scroll-behavior: smooth; scroll-padding-top: 70px; }
   .demo-steps li { flex: 0 0 auto; }
   .demo-pause { align-self: flex-start; }
 }
+
+dialog.video-sheet { width: min(400px, 100vw); }
+.video-sheet video { display: block; width: 100%; height: auto; max-height: calc(92vh - 58px); background: var(--ink); object-fit: contain; }

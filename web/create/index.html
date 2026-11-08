@@ -46,9 +46,14 @@
         <p>Drop in the deck, send one link, and everyone claims their slides. The organizer can split what's left evenly in one tap. Polls for the rest. No sign-in.</p>
         <div class="hero-actions">
           <a class="primary button" href="#new" data-scroll="new">New Board</a>
-          <a class="plain" href="#demo" data-scroll="demo">See how it works</a>
+          <a class="plain" id="watch-demo" href="/demo.mp4">See how it works</a>
         </div>
       </div>
+
+      <dialog class="sheet video-sheet" id="video-sheet" aria-labelledby="video-sheet-title">
+        <header class="sheet-bar"><button type="button" class="plain" data-close>Close</button><h2 id="video-sheet-title">How it works</h2><span></span></header>
+        <video src="/demo.mp4" poster="/demo-poster.jpg" controls playsinline preload="none" width="720" height="1280" aria-label="A phone making a board from a PDF, sending the link, the group claiming every slide, and the group chat agreeing to present"></video>
+      </dialog>
 
       <div class="demo" id="demo">
         <div class="demo-stage" aria-hidden="true">

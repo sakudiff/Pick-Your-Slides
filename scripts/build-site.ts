@@ -22,6 +22,7 @@ for (const [subset, name] of [["latin", "bricolage-latin"], ["latin-ext", "brico
   await copyFile(`node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-${subset}-wght-normal.woff2`, `dist/fonts/${name}.woff2`);
 }
 await copyFile("web/create/landing.css", "dist/landing.css");
+for (const file of ["demo.mp4", "demo-poster.jpg"]) await copyFile(`docs/media/${file}`, `dist/${file}`);
 await mkdir("dist/privacy", { recursive: true });
 await mkdir("dist/about", { recursive: true });
 await copyFile("web/about/index.html", "dist/about/index.html");

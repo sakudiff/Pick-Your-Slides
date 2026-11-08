@@ -127,6 +127,12 @@ test("a real Messenger dark-mode member list reads as five names", async () => {
   assert.deepEqual(namesFromOcr(["Left the group", "Created the group", "Someone with link", "Juan dela Cruz", "Anne van der Berg"]), ["Juan dela Cruz", "Anne van der Berg"]);
 });
 
+test("letter avatars read as initials are dropped from the front of names", async () => {
+  const { namesFromOcr } = await import("../web/shared/parse.ts");
+  assert.deepEqual(namesFromOcr(["A Ana Reyes", "BC Ben Cruz", "C Cy Santos", "Dee Lim", "J Cole Navarro", "Members · 4"]),
+    ["Ana Reyes", "Ben Cruz", "Cy Santos", "Dee Lim", "J Cole Navarro"]);
+});
+
 test("a slide without a title placeholder takes its largest text box, then the topmost", () => {
   const ns = 'xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
   const box = (text: string, y: number, size?: number, placeholder?: string) => `<p:sp><p:nvSpPr><p:nvPr>${placeholder ? `<p:ph type="${placeholder}"/>` : ""}</p:nvPr></p:nvSpPr>

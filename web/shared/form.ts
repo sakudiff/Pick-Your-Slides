@@ -94,6 +94,9 @@ const MARKUP = `
     <div class="stacked-head"><label class="row-label" for="f-titles">Slide titles <span class="optional">optional</span></label><span class="value" id="f-titles-count">None</span></div>
     <textarea id="f-titles" class="field" rows="6" placeholder="One title per line, in slide order"></textarea>
   </div>
+  <div class="row clear-slides" hidden>
+    <button type="button" class="plain destructive" id="f-clear">Clear Slides</button>
+  </div>
 </section>
 <p class="group-footer" id="f-file-status" aria-live="polite">${SOURCE_HINTS.manual}</p>
 
@@ -328,7 +331,17 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
   let pdfPages: { titles: string[]; thumbs: Blob[]; runs: number[][]; portrait: boolean; bookmarks: Bookmark[] } | null = null;
   // titles typed by the organizer stay put, but titles read from a file go when the next file fails
   let titlesImported = false;
+  let sectionsImported = false;
+  let deckImported = false;
   titles.addEventListener("input", () => { titlesImported = false; });
+  sections.addEventListener("input", () => { sectionsImported = false; });
+  deck.addEventListener("input", () => { deckImported = false; });
+  const clearRow = field<HTMLDivElement>(".clear-slides");
+  const updateClear = (): void => {
+    clearRow.hidden = source() === "none" || !(titles.value.trim() || sections.value.trim() || thumbs || pdfPages || file.value);
+  };
+  for (const input of [titles, sections, count]) input.addEventListener("input", updateClear);
+  updateClear();
   const clearImported = (): void => {
     if (!titlesImported) return;
     titles.value = "";
@@ -342,10 +355,17 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     titles.value = found.map((text, index) => text || `Slide ${index + 1}`).join("\n");
     if (foundSections.length) {
       sections.value = sectionsText(foundSections);
+      sectionsImported = true;
       field<HTMLDetailsElement>(".disclosure-group").open = true;
+    } else if (sectionsImported) {
+      // sections read from the previous file do not fit this one
+      sections.value = "";
+      sectionsImported = false;
+      field<HTMLInputElement>('input[name="f-unit"][value="slide"]').checked = true;
     }
     titlesImported = true;
     updateTitleCount();
+    updateClear();
     fileStatus.textContent = message;
   };
   const reportNote = field<HTMLDivElement>(".source-report");
@@ -383,6 +403,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     file.value = "";
     if (kind === "link") link.focus();
     else if (kind === "pdf" || kind === "pptx") file.click();
+    updateClear();
   });
   if (initial && initial.slides.length === 0) {
     sourcePicker.value = "none";
@@ -402,6 +423,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     } finally {
       if (submit) submit.disabled = false;
       linkGo.disabled = false;
+      updateClear();
     }
   };
 
@@ -442,6 +464,7 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
       return;
     }
     deck.value = address;
+    deckImported = true;
     const host = new URL(address).hostname;
     if (/(?:^|\.)canva\.com$/.test(host)) {
       void busy(async () => {
@@ -490,6 +513,27 @@ export function boardForm(form: HTMLFormElement, options: Options): void {
     }, "The deck could not be fetched.");
   };
   linkGo.addEventListener("click", importLink);
+
+  // a wrong file can be undone in one go, keeping the title and members
+  field<HTMLButtonElement>("#f-clear").addEventListener("click", () => {
+    thumbs = null;
+    pdfPages = null;
+    titles.value = "";
+    titlesImported = false;
+    sections.value = "";
+    sectionsImported = false;
+    if (deckImported) deck.value = "";
+    deckImported = false;
+    link.value = "";
+    count.value = "12";
+    field<HTMLInputElement>('input[name="f-unit"][value="slide"]').checked = true;
+    sourcePicker.value = "manual";
+    sourcePicker.dispatchEvent(new Event("change"));
+    updateTitleCount();
+    updateClear();
+    fileStatus.textContent = "Slides cleared. Set the count, or pick another deck.";
+    sourcePicker.focus();
+  });
   link.addEventListener("keydown", event => {
     if (event.key !== "Enter") return;
     event.preventDefault();

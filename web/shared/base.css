@@ -202,6 +202,7 @@ input[role="switch"]:checked::after { transform: translateX(20px); }
 
 button.plain, .plain { border: 0; background: none; padding: 6px 4px; color: var(--tint); font-size: 17px; font-weight: 700; }
 .plain.strong { font-weight: 800; }
+.plain.destructive { color: var(--destructive); }
 .primary { display: block; border: var(--border) solid var(--ink); border-radius: 14px; background: var(--yellow); color: var(--on-fill); box-shadow: var(--shadow-small); font-size: 17px; font-weight: 800; padding: 13px 20px; text-align: center; transition: transform 80ms, box-shadow 80ms; }
 .primary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: var(--shadow-press); }
 .primary.wide { width: 100%; margin-top: 26px; }

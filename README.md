@@ -7,11 +7,11 @@ Split a group presentation without the group chat copy-paste. Make a board, send
 Live at **https://pick-your-slides.netlify.app**
 
 <p>
-  <a href="docs/media/demo.mp4"><img src="docs/media/demo.gif" alt="A phone making a board from a PDF, opening the member link, and claiming three slides" width="280"></a>
+  <a href="docs/media/demo.mp4"><img src="docs/media/demo.gif" alt="A phone making a board from a PDF, sending the link, the group claiming every slide, and the group chat agreeing to present" width="280"></a>
   <img src="docs/media/square.png" alt="A group chat asking who takes slide 7, answered by a Pick your slides link" width="280">
 </p>
 
-The demo is the live site on a phone, sped up through the loading. [Watch it with sound](docs/media/demo.mp4).
+The demo is the live site on a phone, sped up through the loading. The other members claim their slides from their own sessions, and the group chat at the end is a mock-up. [Watch it with sound](docs/media/demo.mp4).
 
 ## What it does
 

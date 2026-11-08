@@ -70,4 +70,16 @@ for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-scroll]")
 }
 
 
+// the video plays in a sheet; without the script the link still opens the file
+const videoSheet = document.querySelector<HTMLDialogElement>("#video-sheet")!;
+const video = videoSheet.querySelector("video")!;
+document.querySelector("#watch-demo")!.addEventListener("click", event => {
+  event.preventDefault();
+  videoSheet.showModal();
+  void video.play().catch(() => undefined);
+});
+videoSheet.querySelector("[data-close]")!.addEventListener("click", () => videoSheet.close());
+videoSheet.addEventListener("click", event => { if (event.target === videoSheet) videoSheet.close(); });
+videoSheet.addEventListener("close", () => video.pause());
+
 const refreshBoards = siteNav();

@@ -80,6 +80,9 @@ export function namesFromOcr(lines: string[], existing: string[] = [], limit: nu
       previous = line;
       line = line.replace(ROLE_TAIL, "").replace(TIME_TAIL, "").trim();
     }
+    // a letter avatar reads as the person's initials in front of the name, as in "AR Ana Reyes"
+    const avatar = /^(\p{Lu}{1,2})\s+(\p{Lu}.*)$/u.exec(line);
+    if (avatar && avatar[2].split(/\s+/).map(word => word[0]).join("").startsWith(avatar[1])) line = avatar[2];
     if (!line || UI_LINES.test(line) || UI_PREFIX.test(line) || /\d/.test(line)) continue;
     // a row of tabs like "All Admins" is labels side by side
     if (line.split(/\s+/).every(word => UI_LINES.test(word))) continue;
